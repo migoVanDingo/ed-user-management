@@ -45,3 +45,12 @@ jobs:
         run: |
           source .venv/bin/activate
           pytest
+
+
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Build Docker image
+          run: docker build --build-arg GITHUB_TOKEN=${{ secrets.PLATFORM_COMMON_PAT }} -t your-service-name .
+
