@@ -13,18 +13,18 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
+# If you still need PLATFORM_COMMON_TOKEN for private git installs, keep the ARG and ENV lines
 ARG PLATFORM_COMMON_TOKEN
 ENV PLATFORM_COMMON_TOKEN=${PLATFORM_COMMON_TOKEN}
 
-# Copy the template requirements file
-COPY requirements.txt.template .
+# Copy the requirements file directly
+COPY requirements.txt .
 
-# Substitute the token placeholder in the template to create the actual requirements.txt
-RUN sed "s|\${PLATFORM_COMMON_TOKEN}|${PLATFORM_COMMON_TOKEN}|g" requirements.txt.template > requirements.txt
-
+# Install dependencies from requirements.txt
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
+# Copy application code
 COPY . .
 
 EXPOSE 8000
