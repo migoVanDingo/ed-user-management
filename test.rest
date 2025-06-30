@@ -1,0 +1,10 @@
+### Create User
+POST http://localhost:5003/user
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "username": "testuser",
+  "idp_uid": "auth0|abc123",
+  "is_verified": true
+}
