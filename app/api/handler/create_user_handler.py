@@ -20,11 +20,9 @@ class CreateUserHandler(AbstractHandler):
 
     def __init__(
         self,
-        payload: dict,
         user_dal: UserDAL = Depends(get_dal(UserDAL)),
     ):
         super().__init__()
-        self.payload = payload
         self.user_dal = user_dal
 
     async def do_process(self, request: Request) -> ServiceResponse:
@@ -32,7 +30,8 @@ class CreateUserHandler(AbstractHandler):
         Handle the request to create a user.
         """
         try:
-            user = User(**self.payload)
+            payload = await request.json()
+            user = User(**payload)
         except TypeError as e:
             raise BadRequestError(message="Invalid user data", code="INVALID_PAYLOAD")
 

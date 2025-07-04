@@ -14,7 +14,7 @@ logger = get_logger("health")
 
 
 # GET list of users
-@router.get("/")
+@router.get("/list")
 async def get_user_list(
     request: Request, handler: GetUserListHandler = Depends(GetUserListHandler)
 ) -> ServiceResponse:
@@ -22,11 +22,11 @@ async def get_user_list(
 
 
 # GET single user by id
-@router.get("/{user_id}")
+@router.get("/")
 async def get_user(
-    user_id: str, request: Request, handler: GetUserHandler = Depends(GetUserHandler)
+    request: Request, handler: GetUserHandler = Depends(GetUserHandler)
 ) -> ServiceResponse:
-    return await handler.do_process(request, user_id)
+    return await handler.do_process(request)
 
 
 # POST create a new user
@@ -51,7 +51,6 @@ async def update_user(
 @router.delete("/{user_id}")
 async def delete_user(
     user_id: str,
-    request: Request,
     handler: DeleteUserHandler = Depends(DeleteUserHandler),
 ) -> ServiceResponse:
-    return await handler.do_process(request, user_id)
+    return await handler.do_process(user_id)

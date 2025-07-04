@@ -3,8 +3,28 @@ POST http://localhost:5003/user
 Content-Type: application/json
 
 {
-  "email": "testuser@example.com",
-  "username": "testuser",
-  "idp_uid": "auth0|abc123",
-  "is_verified": true
+  "email": "b@b.com",
+  "username": "logo",
+  "idp_uid": "abc45323"
+
 }
+
+### GET User
+GET http://localhost:5003/user?id=USR01JZ1Y8EYZ8DVSC0R1AY9EJR41
+
+
+### GET List of Users
+GET http://localhost:5003/user/list?user_id=USR01JZ1Y8EYZ8DVSC0R1AY9EJR41
+
+### Update User
+PUT http://localhost:5003/user/USR01JZ1Y8EYZ8DVSC0R1AY9EJR41
+Content-Type: application/json
+
+{
+  "email": "update@test.com",
+  "username": "meowsers"
+}
+
+
+### Delete User
+DELETE http://localhost:5003/user/USR01JYZ8XC32QMEGTR4RTXD86RGX
