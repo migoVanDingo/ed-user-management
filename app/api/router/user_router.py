@@ -10,7 +10,7 @@ from app.api.handler.delete_user_handler import DeleteUserHandler
 
 
 router = APIRouter()
-logger = get_logger("health")
+logger = get_logger("user")
 
 
 # GET list of users

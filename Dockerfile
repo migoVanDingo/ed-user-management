@@ -17,6 +17,9 @@ RUN apt-get update && apt-get install -y \
 ARG PLATFORM_COMMON_TOKEN
 ENV PLATFORM_COMMON_TOKEN=${PLATFORM_COMMON_TOKEN}
 
+ARG FIREBASE_CONFIG
+ENV FIREBASE_CONFIG=${FIREBASE_CONFIG}
+
 # Copy the requirements file directly
 COPY requirements.txt .
 

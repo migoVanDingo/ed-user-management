@@ -32,11 +32,13 @@ class CreateUserHandler(AbstractHandler):
         try:
             payload = await request.json()
             user = User(**payload)
+
         except TypeError as e:
+            logger.error(f"Error creating user: {e}")
             raise BadRequestError(message="Invalid user data", code="INVALID_PAYLOAD")
 
         created_user = await self.user_dal.create(user)
-
+        logger.info(f"User created: {created_user.id}")
         return ServiceResponse(
             message="User created successfully",
             status_code=201,

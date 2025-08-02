@@ -1,3 +1,4 @@
 .env
 .venv
 .rest
+app/auth/*.json

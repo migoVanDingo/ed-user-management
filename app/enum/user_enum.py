@@ -1,0 +1,4 @@
+from enum import Enum
+
+
+SYSTEM_USER_IDS = {"ROOT": "USR123SYSTEM456USER789"}

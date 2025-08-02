@@ -13,5 +13,5 @@ logger = get_logger("health")
 async def health_check(request: Request):
 
     logger.info("Health check yuh mama!", path=request.url.path)
-    raise Exception("This is a test exception")
+
     return ServiceResponse(message="Service is healthy", status_code=200)
