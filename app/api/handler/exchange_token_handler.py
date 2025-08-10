@@ -6,6 +6,7 @@ from platform_common.utils.service_response import ServiceResponse
 from platform_common.logging.logging import get_logger
 from platform_common.db.dependencies.get_dal import get_dal
 from platform_common.models.user import User
+from platform_common.utils.time_helpers import get_current_epoch
 from platform_common.models.user_session import UserSession
 from platform_common.config.settings import get_settings
 from platform_common.errors.base import AuthError, BadRequestError
@@ -67,7 +68,7 @@ class ExchangeFirebaseTokenHandler(AbstractHandler):
                 raise AuthError("Email not verified")
 
         # Create user session
-        now = int(time.time())
+        now = int(get_current_epoch())
         access_token_exp = 15 * 60  # 15 minutes
         refresh_token = secrets.token_urlsafe(32)
         refresh_exp = now + 30 * 24 * 60 * 60  # 30 days
@@ -95,9 +96,17 @@ class ExchangeFirebaseTokenHandler(AbstractHandler):
             message="Login successful",
             status_code=200,
             data={
-                "access_token": access_token,
                 "user": user.dict(),
             },
+        )
+        service_response.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=not is_local,
+            secure=not is_local,
+            samesite="Lax" if is_local else "Strict",
+            max_age=30 * 24 * 60 * 60,
+            path="/auth/refresh/access_token",
         )
 
         service_response.set_cookie(
@@ -106,8 +115,8 @@ class ExchangeFirebaseTokenHandler(AbstractHandler):
             httponly=not is_local,
             secure=not is_local,
             samesite="Lax" if is_local else "Strict",
-            max_age=30 * 24 * 60 * 60,
-            path="/auth/refresh",
+            max_age=15 * 60,
+            path="/auth/refresh/refresh_token",
         )
 
         logger.info(f"Access token created for user {user.id}")

@@ -25,5 +25,13 @@ async def exchange_auth_code(
         logger.info("Exchanging Firebase ID token for internal session")
         return await handler.do_process(request)
     except Exception as e:
-        logger.error("Error exchanging auth code:", e)
-        return ServiceResponse({"errors": e, "message": "Failed to exchange auth code"})
+        logger.exception("Error exchanging auth code")
+
+        return ServiceResponse(
+            {
+                "success": False,
+                "message": "Failed to exchange auth code",
+                "error": str(e),
+            },
+            status_code=400,
+        )

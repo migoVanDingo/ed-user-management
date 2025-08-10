@@ -77,7 +77,6 @@ class LoginUserHandler(AbstractHandler):
             message="Login successful",
             status_code=200,
             data={
-                "access_token": access_token,
                 "user": user.dict(),
             },
         )
@@ -90,6 +89,16 @@ class LoginUserHandler(AbstractHandler):
             samesite="Lax" if is_local else "Strict",
             max_age=30 * 24 * 60 * 60,
             path="/auth/refresh",
+        )
+
+        service_response.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=not is_local,
+            secure=not is_local,
+            samesite="Lax" if is_local else "Strict",
+            max_age=15 * 60,
+            path="/auth/refresh/access_token",
         )
 
         logger.info(f"Access token created for user {user.id}")

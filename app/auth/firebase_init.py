@@ -5,6 +5,7 @@ from platform_common.config.settings import get_settings
 import os
 
 from platform_common.logging.logging import get_logger
+from platform_common.utils.service_response import ServiceResponse
 
 logger = get_logger("firebase_init")
 settings = get_settings()
@@ -23,5 +24,11 @@ def init_firebase():
             firebase_admin.initialize_app(cred)
             logger.info("Firebase initialized successfully.")
         except Exception as e:
-            print("Failed to initialize Firebase:", e)
-            raise
+            return ServiceResponse(
+                {
+                    "success": False,
+                    "message": "Failed to initialize firebase",
+                    "error": str(e),
+                },
+                status_code=400,
+            )
