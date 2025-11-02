@@ -27,6 +27,7 @@ class LoginUserHandler(AbstractHandler):
         self.session_dal = session_dal
 
     async def do_process(self, request: Request) -> ServiceResponse:
+        logger.info(f"[C: LoginUserHandler -- F: do_process] ==== START ====")
         authorization = request.headers.get("authorization")
         if not authorization or not authorization.startswith("Bearer "):
             raise AuthError("Missing or invalid Authorization header")
@@ -39,6 +40,7 @@ class LoginUserHandler(AbstractHandler):
             logger.warning(f"Invalid Firebase token: {e}")
             raise AuthError("[Login User Handler] Invalid Firebase ID token")
 
+        logger.debug(f"[{__class__}] Firebase token decoded")
         uid = decoded_token["uid"]
         user = await self.user_dal.get_by_idp_uid(uid)
         if not user:
