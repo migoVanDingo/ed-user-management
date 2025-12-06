@@ -8,6 +8,10 @@ from platform_common.db.dependencies.get_dal import get_dal
 from platform_common.utils.time_helpers import get_current_epoch
 from platform_common.logging.logging import get_logger
 from platform_common.auth.jwt_utils import create_jwt
+from platform_common.auth.token_sources import (
+    issue_access_token,
+    REFRESH_TOKEN_TTL_SECONDS,
+)
 from firebase_admin import auth as firebase_auth
 import os
 
@@ -55,7 +59,7 @@ class LoginUserHandler(AbstractHandler):
             now = get_current_epoch()
             access_token_exp = 15 * 60  # 15 minutes
             refresh_token = secrets.token_urlsafe(32)
-            refresh_exp = now + 30 * 24 * 60 * 60  # 30 days
+            refresh_exp = now + REFRESH_TOKEN_TTL_SECONDS  # 30 days
 
             session = await self.session_dal.create_session(
                 user_id=user.id,
@@ -92,19 +96,27 @@ class LoginUserHandler(AbstractHandler):
                 httponly=not is_local,
                 secure=not is_local,
                 samesite="Lax" if is_local else "Strict",
-                max_age=30 * 24 * 60 * 60,
-                path="/auth/refresh",
+                max_age=REFRESH_TOKEN_TTL_SECONDS,
+                path="/",
             )
 
-            service_response.set_cookie(
-                key="access_token",
-                value=access_token,
-                httponly=not is_local,
-                secure=not is_local,
-                samesite="Lax" if is_local else "Strict",
-                max_age=15 * 60,
-                path="/auth/refresh/access_token",
+            # Issue and set access token cookie via shared helper
+            issue_access_token(
+                response=service_response,
+                user_id=user.id,
+                session_id=session.id,
+                # path="/" by default
             )
+
+            # service_response.set_cookie(
+            #     key="access_token",
+            #     value=access_token,
+            #     httponly=not is_local,
+            #     secure=not is_local,
+            #     samesite="Lax" if is_local else "Strict",
+            #     max_age=15 * 60,
+            #     path="/",
+            # )
 
             logger.info(f"Access token created for user {user.id}")
             return service_response

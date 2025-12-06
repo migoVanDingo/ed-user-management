@@ -106,7 +106,7 @@ class ExchangeFirebaseTokenHandler(AbstractHandler):
             secure=not is_local,
             samesite="Lax" if is_local else "Strict",
             max_age=30 * 24 * 60 * 60,
-            path="/auth/refresh/access_token",
+            path="/",
         )
 
         service_response.set_cookie(
@@ -116,7 +116,7 @@ class ExchangeFirebaseTokenHandler(AbstractHandler):
             secure=not is_local,
             samesite="Lax" if is_local else "Strict",
             max_age=15 * 60,
-            path="/auth/refresh/refresh_token",
+            path="/",
         )
 
         logger.info(f"Access token created for user {user.id}")
