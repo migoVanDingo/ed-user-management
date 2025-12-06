@@ -69,6 +69,7 @@ class GetSessionFromCookiesHandler(AbstractHandler):
         service_response = ServiceResponse(
             message="Session valid",
             status_code=200,
+            success=True,
             data={
                 "user": user.dict(),
                 "session_id": session.id,
