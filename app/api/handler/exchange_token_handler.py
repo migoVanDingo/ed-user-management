@@ -12,6 +12,7 @@ from platform_common.config.settings import get_settings
 from platform_common.errors.base import AuthError, BadRequestError
 from firebase_admin import auth as firebase_auth
 from platform_common.auth.jwt_utils import create_jwt
+from app.pubsub.events.user_events import publish_user_verified_event
 import secrets
 import time
 import os
@@ -49,23 +50,46 @@ class ExchangeFirebaseTokenHandler(AbstractHandler):
 
         # Find or create user
         user = await self.user_dal.get_by_idp_uid(uid)
+        just_created = False
+
         if not user:
             if not email:
                 raise BadRequestError("Email required to create user")
+
             user = User(
                 idp_uid=uid,
                 email=email,
                 username=email.split("@")[0],
-                is_verified=True,
+                # ✅ keep semantics: OAuth users are verified if Firebase says so
+                is_verified=email_verified,
             )
             user = await self.user_dal.create(user)
+            just_created = True
             logger.info(f"Created new user from Firebase: {user.id}")
+
+        # track previous verification state
+        was_verified_before = bool(getattr(user, "is_verified", False))
 
         if not user.is_verified:
             if email_verified:
                 user = await self.user_dal.update(user.id, {"is_verified": True})
             else:
                 raise AuthError("Email not verified")
+
+        # 🔑 If user is verified now and wasn't before, emit user_verified
+        if user.is_verified and (just_created or not was_verified_before):
+            org_id = getattr(user, "organization_id", None)
+            logger.info(
+                "Emitting user_verified event for user_id=%s organization_id=%s",
+                user.id,
+                org_id,
+            )
+            await publish_user_verified_event(
+                user_id=user.id,
+                organization_id=org_id,
+                email=user.email,
+                username=getattr(user, "username", None),
+            )
 
         # Create user session
         now = int(get_current_epoch())
