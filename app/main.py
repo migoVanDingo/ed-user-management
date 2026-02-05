@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from platform_common.middleware.request_id_middleware import RequestIDMiddleware
+from platform_common.middleware.auth_middleware import AuthMiddleware
 from platform_common.exception_handling.handlers import add_exception_handlers
 from app.api.router.user_action_router import router as user_action_router
 from app.api.router.auth_router import router as auth_router
@@ -27,6 +28,7 @@ app.add_middleware(
 )
 
 app.add_middleware(RequestIDMiddleware)
+app.add_middleware(AuthMiddleware)
 add_exception_handlers(app)
 
 

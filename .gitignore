@@ -2,3 +2,4 @@
 .venv
 .rest
 app/auth/*.json
+*.pyc

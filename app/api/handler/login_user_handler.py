@@ -57,7 +57,7 @@ class LoginUserHandler(AbstractHandler):
 
             # Create user session
             now = get_current_epoch()
-            access_token_exp = 15 * 60  # 15 minutes
+            # access_token_exp = 15 * 60  # 15 minutes
             refresh_token = secrets.token_urlsafe(32)
             refresh_exp = now + REFRESH_TOKEN_TTL_SECONDS  # 30 days
 
@@ -71,13 +71,13 @@ class LoginUserHandler(AbstractHandler):
 
             logger.info(f"Session created: {session.id} for user {user.id}")
 
-            token_payload = {
-                "sub": user.id,
-                "session_id": session.id,
-            }
-            access_token = create_jwt(
-                payload=token_payload, expires_in=access_token_exp
-            )
+            # token_payload = {
+            #     "sub": user.id,
+            #     "session_id": session.id,
+            # }
+            # access_token = create_jwt(
+            #     payload=token_payload, expires_in=access_token_exp
+            # )
 
             is_local = os.getenv("ENVIRONMENT", "local") == "local"
             logger.info(f"is_local: {is_local}")
