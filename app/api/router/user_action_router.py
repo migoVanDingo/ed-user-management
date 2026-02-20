@@ -8,6 +8,7 @@ from app.api.handler.self_register_handler import SelfRegisterHandler
 from app.api.handler.login_user_handler import LoginUserHandler
 from app.api.handler.logout_user_handler import LogoutUserHandler
 from app.api.handler.verify_account import VerifyAccountHandler
+from app.api.handler.validate_team_invite_handler import ValidateTeamInviteHandler
 
 router = APIRouter(
     tags=["user-actions"],
@@ -60,5 +61,16 @@ async def verify_account(
     """
     Verify a user's email address.
     Expects a token in the query parameters.
+    """
+    return await handler.do_process(request)
+
+
+@router.get("/validate-team-invite")
+async def validate_team_invite(
+    request: Request,
+    handler: ValidateTeamInviteHandler = Depends(ValidateTeamInviteHandler),
+) -> ServiceResponse:
+    """
+    Validate organization invite token before signup flow.
     """
     return await handler.do_process(request)
